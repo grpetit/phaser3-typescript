@@ -258,16 +258,19 @@ export class PFCGameScene extends Phaser.Scene {
         this.FCP.anim(e, e.sp, 2, 4);
 
         if (this.FCP.crc(this.superBombCircle, e)) {
+          this.ship.p += 10;
           this.enemies.splice(i, 1);
           this.createCircleExplosion(e, 3);
         }
 
         if (this.FCP.rrc(e, this.laserLine)) {
+          this.ship.p += 10;
           this.enemies.splice(i, 1);
           this.createCircleExplosion(e, 3);
         }
 
         if (this.FCP.rrc(e, this.ship)) {
+          this.ship.p += 10;
           this.enemies.splice(i, 1);
           this.playerDying();
           this.createCircleExplosion(e, 3);
