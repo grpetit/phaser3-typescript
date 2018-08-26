@@ -1,7 +1,7 @@
 /**
  * @author       Digitsensitive <digit.sensitivee@gmail.com>
  * @copyright    2018 Digitsensitive
- * @description  Fantasy Console
+ * @description  Fantasy Console Helper
  * @license      Digitsensitive
  */
 
@@ -28,16 +28,16 @@ export class FantasyConsole {
     this.cursors = this.currentScene.input.keyboard.createCursorKeys();
     this.gameObjects = this.currentScene.add.group();
     this.keyA = this.currentScene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.Z
+      Phaser.Input.Keyboard.KeyCodes.A
     );
     this.keyB = this.currentScene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.X
     );
     this.keyX = this.currentScene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.A
+      Phaser.Input.Keyboard.KeyCodes.S
     );
     this.keyY = this.currentScene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.S
+      Phaser.Input.Keyboard.KeyCodes.Y
     );
     this.palette = [];
     this.passedTicks = 0;

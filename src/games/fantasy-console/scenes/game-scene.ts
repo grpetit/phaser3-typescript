@@ -1,7 +1,7 @@
 /**
  * @author       Digitsensitive <digit.sensitivee@gmail.com>
  * @copyright    2018 Digitsensitive
- * @description  Phaser Fantasy Console: Game Scene
+ * @description  Fantasy Console: Game Scene
  * @license      Digitsensitive
  */
 
@@ -111,20 +111,22 @@ export class PFCGameScene extends Phaser.Scene {
     w: 8,
     h: 8,
     health: 3,
-    l: 0,
-    b: 0,
-    s: 0,
+    l: 1,
+    d: 1,
+    s: 1,
     p: 0
   };
 
-  private enemies: any[] = [];
-  private pickups: any[] = [];
   private bullets: any[] = [];
-  private outOfScreenCircles: any[] = [];
+  private enemies: any[] = [];
+  private explosionCircles: any[] = [];
+  private pickups: any[] = [];
   private stars: any[] = [];
 
-  private explosionCircle: any = {};
+  // pick-ups
+  private superBombCircle: any = {};
   private laserLine: any = {};
+  private defensiveShieldCircle: any = {};
 
   constructor() {
     super({
@@ -171,13 +173,25 @@ export class PFCGameScene extends Phaser.Scene {
       this.ship.x += 2;
     }
     if (this.FCP.btnp(4)) {
-      this.superBomb();
+      if (this.ship.s !== 0) {
+        this.ship.s--;
+        this.superBomb();
+      }
     }
     if (this.FCP.btnp(5)) {
       this.fire();
     }
     if (this.FCP.btnp(6)) {
-      this.laserAttack();
+      if (this.ship.l !== 0) {
+        this.ship.l--;
+        this.laserAttack();
+      }
+    }
+    if (this.FCP.btnp(7)) {
+      if (this.ship.d !== 0) {
+        this.ship.d--;
+        this.defensiveShield();
+      }
     }
   }
 
@@ -243,7 +257,7 @@ export class PFCGameScene extends Phaser.Scene {
 
         this.FCP.anim(e, e.sp, 2, 4);
 
-        if (this.FCP.crc(this.explosionCircle, e)) {
+        if (this.FCP.crc(this.superBombCircle, e)) {
           this.enemies.splice(i, 1);
           this.createCircleExplosion(e, 3);
         }
@@ -263,30 +277,15 @@ export class PFCGameScene extends Phaser.Scene {
       }
     });
 
-    // circles
-    this.outOfScreenCircles.forEach((c, i) => {
+    // explosion circles
+    this.explosionCircles.forEach((c, i) => {
       if (c.r < 30) {
         this.FCP.circb(c.x, c.y, c.r, c.t, c.c);
         c.r += 1;
       } else {
-        this.outOfScreenCircles.splice(i, 1);
+        this.explosionCircles.splice(i, 1);
       }
     });
-
-    if (this.explosionCircle) {
-      if (this.explosionCircle.r < 200) {
-        this.FCP.circb(
-          this.explosionCircle.x,
-          this.explosionCircle.y,
-          this.explosionCircle.r,
-          this.explosionCircle.t,
-          this.explosionCircle.c
-        );
-        this.explosionCircle.r += 2;
-      } else {
-        this.explosionCircle = {};
-      }
-    }
 
     // pickups
     this.pickups.forEach((p, i) => {
@@ -304,7 +303,7 @@ export class PFCGameScene extends Phaser.Scene {
             break;
           }
           case 33: {
-            this.ship.b += 1;
+            this.ship.d += 1;
             break;
           }
           case 34: {
@@ -318,6 +317,21 @@ export class PFCGameScene extends Phaser.Scene {
         }
       }
     });
+
+    if (this.superBombCircle) {
+      if (this.superBombCircle.r < 200) {
+        this.FCP.circb(
+          this.superBombCircle.x,
+          this.superBombCircle.y,
+          this.superBombCircle.r,
+          this.superBombCircle.t,
+          this.superBombCircle.c
+        );
+        this.superBombCircle.r += 2;
+      } else {
+        this.superBombCircle = {};
+      }
+    }
 
     if (this.laserLine) {
       this.laserLine.d--;
@@ -337,6 +351,21 @@ export class PFCGameScene extends Phaser.Scene {
         this.laserLine = {};
       }
     }
+
+    if (this.defensiveShieldCircle) {
+      this.defensiveShieldCircle.d--;
+      if (this.defensiveShieldCircle.d > 0) {
+        this.FCP.circb(
+          this.ship.x,
+          this.ship.y,
+          this.defensiveShieldCircle.r,
+          this.defensiveShieldCircle.t,
+          Math.floor(Math.random() * 17) + 1
+        );
+      } else {
+        this.defensiveShieldCircle = {};
+      }
+    }
   }
 
   drawUI(): void {
@@ -351,9 +380,9 @@ export class PFCGameScene extends Phaser.Scene {
 
     // draw player pickup status
     this.FCP.spr(32, 10, this.FCP.height() - 30);
-    this.FCP.print("x" + this.ship.l, 16, this.FCP.height() - 33, 10);
+    this.FCP.print("x" + this.ship.d, 16, this.FCP.height() - 33, 10);
     this.FCP.spr(33, 10, this.FCP.height() - 20);
-    this.FCP.print("x" + this.ship.b, 16, this.FCP.height() - 23, 10);
+    this.FCP.print("x" + this.ship.l, 16, this.FCP.height() - 23, 10);
     this.FCP.spr(35, 10, this.FCP.height() - 10);
     this.FCP.print("x" + this.ship.s, 16, this.FCP.height() - 13, 10);
 
@@ -404,7 +433,7 @@ export class PFCGameScene extends Phaser.Scene {
 
   createCircleExplosion(pos, numb): void {
     for (let n = 0; n < numb; n++) {
-      this.outOfScreenCircles.push({
+      this.explosionCircles.push({
         x: pos.x,
         y: pos.y,
         r: n * 4,
@@ -447,7 +476,7 @@ export class PFCGameScene extends Phaser.Scene {
   }
 
   superBomb(): void {
-    this.explosionCircle = {
+    this.superBombCircle = {
       x: this.ship.x,
       y: this.ship.y,
       r: 4,
@@ -464,6 +493,17 @@ export class PFCGameScene extends Phaser.Scene {
       h: this.FCP.height() - this.ship.y,
       t: 2,
       c: 3,
+      d: 100
+    };
+  }
+
+  defensiveShield(): void {
+    this.defensiveShieldCircle = {
+      x: this.ship.x,
+      y: this.ship.y,
+      r: 8,
+      t: 2,
+      c: Math.floor(Math.random() * 17) + 1,
       d: 100
     };
   }

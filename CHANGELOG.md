@@ -6,6 +6,7 @@
 
 * New small beginner Game Alpha Adjust (*digitsensitive*)
 * New Game Space Invader (*digitsensitive*)
+* New Game Fantasy Console (*digitsensitive*)
 
 ### Updates
 
